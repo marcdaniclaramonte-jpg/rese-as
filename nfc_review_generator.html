@@ -1,0 +1,417 @@
+<style>
+  :root{
+    --ink:#12181A;
+    --paper:#F6F4EF;
+    --line:rgba(18,24,26,0.12);
+    --accent:#2F6B4F;
+    --accent-soft:#E4EFE8;
+    --gold:#B98A2E;
+    --mono: 'JetBrains Mono', 'Courier New', monospace;
+    --display: 'Georgia', 'Times New Roman', serif;
+    --body: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  #app{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--body);
+    padding:0;
+    min-height:100%;
+    line-height:1.45;
+  }
+  .wrap{max-width:640px;margin:0 auto;padding:28px 20px 60px;}
+
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--accent);
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:6px;
+  }
+  .eyebrow::before{content:"";width:16px;height:1px;background:var(--accent);}
+
+  h1{
+    font-family:var(--display);
+    font-size:30px;
+    font-weight:600;
+    margin:0 0 6px;
+    letter-spacing:-0.01em;
+  }
+  .sub{
+    color:rgba(18,24,26,0.62);
+    font-size:14.5px;
+    margin:0 0 28px;
+    max-width:46ch;
+  }
+
+  .card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:22px;
+    margin-bottom:18px;
+  }
+  .card h2{
+    font-family:var(--mono);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.1em;
+    color:rgba(18,24,26,0.55);
+    margin:0 0 16px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .step-num{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:18px;height:18px;
+    border-radius:50%;
+    background:var(--accent);
+    color:#fff;
+    font-family:var(--mono);
+    font-size:10px;
+    margin-right:8px;
+  }
+
+  label{
+    display:block;
+    font-size:12.5px;
+    font-weight:600;
+    margin-bottom:6px;
+    color:rgba(18,24,26,0.8);
+  }
+  .field{margin-bottom:14px;}
+  .hint{
+    font-size:12px;
+    color:rgba(18,24,26,0.5);
+    margin-top:5px;
+  }
+  .hint a{color:var(--accent);}
+
+  input[type=text]{
+    width:100%;
+    padding:11px 12px;
+    border:1px solid var(--line);
+    border-radius:9px;
+    font-size:14px;
+    font-family:var(--body);
+    background:#FCFBF8;
+    color:var(--ink);
+    outline:none;
+    transition:border-color .15s;
+  }
+  input[type=text]:focus{border-color:var(--accent);}
+
+  .row{display:flex;gap:10px;}
+  .row > *{flex:1;}
+
+  button{
+    font-family:var(--body);
+    font-weight:600;
+    font-size:13.5px;
+    border:none;
+    border-radius:9px;
+    padding:11px 16px;
+    cursor:pointer;
+    transition:transform .1s, opacity .15s;
+  }
+  button:active{transform:scale(0.97);}
+  .btn-primary{background:var(--ink);color:#fff;width:100%;}
+  .btn-primary:disabled{opacity:0.35;cursor:not-allowed;}
+  .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--ink);}
+  .btn-copy{background:var(--accent-soft);color:var(--accent);font-size:12.5px;padding:8px 12px;}
+
+  .result{
+    display:none;
+    margin-top:18px;
+    padding-top:18px;
+    border-top:1px dashed var(--line);
+  }
+  .result.show{display:block;}
+
+  .url-box{
+    display:flex;
+    gap:8px;
+    align-items:center;
+    background:#FCFBF8;
+    border:1px solid var(--line);
+    border-radius:9px;
+    padding:10px 12px;
+  }
+  .url-box code{
+    flex:1;
+    font-family:var(--mono);
+    font-size:11.5px;
+    word-break:break-all;
+    color:var(--ink);
+  }
+
+  .qr-panel{
+    display:flex;
+    gap:18px;
+    align-items:center;
+    margin-top:16px;
+    flex-wrap:wrap;
+  }
+  #qrcode{
+    background:#fff;
+    padding:10px;
+    border-radius:10px;
+    border:1px solid var(--line);
+    flex-shrink:0;
+  }
+  #qrcode canvas{display:block;border-radius:4px;}
+  .qr-info{flex:1;min-width:180px;}
+  .qr-info p{font-size:13px;color:rgba(18,24,26,0.65);margin:0 0 10px;}
+
+  .saved-list{list-style:none;margin:0;padding:0;}
+  .saved-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:12px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .saved-item:last-child{border-bottom:none;}
+  .saved-name{font-weight:600;font-size:14px;}
+  .saved-meta{font-family:var(--mono);font-size:10.5px;color:rgba(18,24,26,0.45);margin-top:2px;}
+  .saved-actions{display:flex;gap:6px;flex-shrink:0;}
+  .icon-btn{
+    background:transparent;border:1px solid var(--line);
+    width:30px;height:30px;border-radius:7px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px;padding:0;color:rgba(18,24,26,0.6);
+  }
+  .icon-btn:hover{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);}
+  .empty{
+    font-size:13px;
+    color:rgba(18,24,26,0.45);
+    text-align:center;
+    padding:20px 0;
+  }
+  .toast{
+    position:fixed;
+    bottom:20px;left:50%;
+    transform:translateX(-50%) translateY(20px);
+    background:var(--ink);color:#fff;
+    padding:10px 18px;border-radius:20px;
+    font-size:13px;font-weight:600;
+    opacity:0;pointer-events:none;
+    transition:all .25s ease;
+    z-index:99;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+
+<div id="app">
+  <div class="wrap">
+    <div class="eyebrow">Wexai · Herramienta interna</div>
+    <h1>Generador de enlaces NFC</h1>
+    <p class="sub">Convierte el nombre de un negocio en su enlace directo de reseña de Google, listo para programar en la tarjeta NFC.</p>
+
+    <div class="card">
+      <h2><span><span class="step-num">1</span>Encuentra el Place ID</span></h2>
+      <p class="hint" style="margin-top:-6px;margin-bottom:14px;">Busca el negocio en la herramienta oficial de Google y copia el código que te da.</p>
+      <a href="https://developers.google.com/maps/documentation/places/web-service/place-id" target="_blank" rel="noopener">
+        <button class="btn-ghost" style="width:100%;">Abrir buscador de Place ID de Google ↗</button>
+      </a>
+    </div>
+
+    <div class="card">
+      <h2><span><span class="step-num">2</span>Genera el enlace</span></h2>
+
+      <div class="field">
+        <label for="bizName">Nombre del negocio</label>
+        <input type="text" id="bizName" placeholder="Ej. Morela Beauty">
+      </div>
+
+      <div class="field">
+        <label for="placeId">Place ID</label>
+        <input type="text" id="placeId" placeholder="Ej. ChIJN1t_tDeuEmsRUsoyG83frY4">
+        <div class="hint">Pégalo tal cual te lo da Google, sin espacios.</div>
+      </div>
+
+      <button class="btn-primary" id="generateBtn" disabled>Generar enlace y QR</button>
+
+      <div class="result" id="result">
+        <label style="margin-bottom:8px;">Enlace de reseña directa</label>
+        <div class="url-box">
+          <code id="generatedUrl"></code>
+          <button class="btn-copy" id="copyBtn">Copiar</button>
+        </div>
+
+        <div class="qr-panel">
+          <div id="qrcode"></div>
+          <div class="qr-info">
+            <p>Escanea para probar que abre directo a "escribir reseña". Programa este mismo enlace en el chip NFC con la app <strong>NFC Tools</strong>.</p>
+            <button class="btn-ghost" id="saveBtn">Guardar en mi lista de clientes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span>Clientes guardados</span><span id="countBadge" style="font-weight:400;"></span></h2>
+      <ul class="saved-list" id="savedList"></ul>
+      <div class="empty" id="emptyState">Aún no has guardado ningún negocio.</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(function(){
+  const bizNameEl = document.getElementById('bizName');
+  const placeIdEl = document.getElementById('placeId');
+  const generateBtn = document.getElementById('generateBtn');
+  const result = document.getElementById('result');
+  const generatedUrlEl = document.getElementById('generatedUrl');
+  const copyBtn = document.getElementById('copyBtn');
+  const saveBtn = document.getElementById('saveBtn');
+  const savedList = document.getElementById('savedList');
+  const emptyState = document.getElementById('emptyState');
+  const countBadge = document.getElementById('countBadge');
+  const toast = document.getElementById('toast');
+  let qrInstance = null;
+  let currentUrl = '';
+  let currentName = '';
+
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(()=>toast.classList.remove('show'), 1800);
+  }
+
+  function checkFormValid(){
+    generateBtn.disabled = !(bizNameEl.value.trim() && placeIdEl.value.trim());
+  }
+  bizNameEl.addEventListener('input', checkFormValid);
+  placeIdEl.addEventListener('input', checkFormValid);
+
+  function buildUrl(placeId){
+    return `https://search.google.com/local/writereview?placeid=${encodeURIComponent(placeId.trim())}`;
+  }
+
+  generateBtn.addEventListener('click', ()=>{
+    const name = bizNameEl.value.trim();
+    const pid = placeIdEl.value.trim();
+    if(!name || !pid) return;
+    currentName = name;
+    currentUrl = buildUrl(pid);
+    generatedUrlEl.textContent = currentUrl;
+    result.classList.add('show');
+
+    document.getElementById('qrcode').innerHTML = '';
+    qrInstance = new QRCode(document.getElementById('qrcode'), {
+      text: currentUrl,
+      width: 128,
+      height: 128,
+      colorDark: '#12181A',
+      colorLight: '#ffffff'
+    });
+  });
+
+  copyBtn.addEventListener('click', ()=>{
+    navigator.clipboard.writeText(currentUrl).then(()=>{
+      showToast('Enlace copiado');
+    }).catch(()=>{
+      const ta = document.createElement('textarea');
+      ta.value = currentUrl;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast('Enlace copiado');
+    });
+  });
+
+  async function loadSaved(){
+    try{
+      const res = await window.storage.get('nfc-clients');
+      return res ? JSON.parse(res.value) : [];
+    }catch(e){
+      return [];
+    }
+  }
+
+  async function persistSaved(list){
+    try{
+      await window.storage.set('nfc-clients', JSON.stringify(list));
+    }catch(e){
+      showToast('No se pudo guardar');
+    }
+  }
+
+  function renderList(list){
+    savedList.innerHTML = '';
+    countBadge.textContent = list.length ? `${list.length}` : '';
+    if(!list.length){
+      emptyState.style.display = 'block';
+      return;
+    }
+    emptyState.style.display = 'none';
+    list.slice().reverse().forEach((item)=>{
+      const li = document.createElement('li');
+      li.className = 'saved-item';
+      li.innerHTML = `
+        <div>
+          <div class="saved-name">${escapeHtml(item.name)}</div>
+          <div class="saved-meta">${escapeHtml(item.url)}</div>
+        </div>
+        <div class="saved-actions">
+          <button class="icon-btn" data-action="copy" data-url="${escapeAttr(item.url)}" title="Copiar">⧉</button>
+          <button class="icon-btn" data-action="delete" data-id="${item.id}" title="Eliminar">✕</button>
+        </div>
+      `;
+      savedList.appendChild(li);
+    });
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+  function escapeAttr(str){
+    return str.replace(/"/g, '&quot;');
+  }
+
+  saveBtn.addEventListener('click', async ()=>{
+    if(!currentUrl || !currentName) return;
+    const list = await loadSaved();
+    list.push({ id: Date.now().toString(), name: currentName, url: currentUrl });
+    await persistSaved(list);
+    renderList(list);
+    showToast('Cliente guardado');
+  });
+
+  savedList.addEventListener('click', async (e)=>{
+    const btn = e.target.closest('button');
+    if(!btn) return;
+    if(btn.dataset.action === 'copy'){
+      navigator.clipboard.writeText(btn.dataset.url).then(()=>showToast('Enlace copiado'));
+    }
+    if(btn.dataset.action === 'delete'){
+      const list = await loadSaved();
+      const filtered = list.filter(item => item.id !== btn.dataset.id);
+      await persistSaved(filtered);
+      renderList(filtered);
+      showToast('Eliminado');
+    }
+  });
+
+  (async ()=>{
+    const list = await loadSaved();
+    renderList(list);
+  })();
+})();
+</script>
